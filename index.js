@@ -7,25 +7,18 @@ const PORT = process.env.PORT;
 const cors = require("cors");
 
 const Product = require("./models/Product");
-const { response } = require("express");
 const notFound = require("./middlewares/notFound");
 const handleErrors = require("./middlewares/handleErrors");
 
 app.use(cors());
 app.use(express.json());
 
-let products = [];
-
-app.get("/", (req, res) => {
-  res.send("attemp");
-});
-
-app.get("/api/products", (req, res) => {
+app.get("/api/products", (req, res, next) => {
   Product.find({})
     .then((products) => {
       res.json(products);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 });
 
 app.get("/api/products/:id", (req, res, next) => {
@@ -100,6 +93,8 @@ app.use(notFound);
 
 app.use(handleErrors);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log("App listening on port: " + PORT);
 });
+
+module.exports = { app, server };
