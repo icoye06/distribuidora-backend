@@ -1,10 +1,104 @@
+require("dotenv").config();
+require("./mongo");
+
 const express = require("express");
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT;
+const cors = require("cors");
+
+const Product = require("./models/Product");
+const { response } = require("express");
+const notFound = require("./middlewares/notFound");
+const handleErrors = require("./middlewares/handleErrors");
+
+app.use(cors());
+app.use(express.json());
+
+let products = [];
 
 app.get("/", (req, res) => {
   res.send("attemp");
 });
+
+app.get("/api/products", (req, res) => {
+  Product.find({})
+    .then((products) => {
+      res.json(products);
+    })
+    .catch((err) => console.log(err));
+});
+
+app.get("/api/products/:id", (req, res, next) => {
+  const id = req.params.id;
+
+  Product.findById(id)
+    .then((product) => {
+      if (product) {
+        return res.json(product);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+app.post("/api/products", (req, res) => {
+  const product = req.body;
+
+  if (!product.name) {
+    return res.status(400).json({
+      error: "Name is requiered for product creation",
+    });
+  }
+
+  const newProduct = new Product({
+    barsCode: product.barsCode,
+    name: product.name,
+    creationDate: product.creationDate,
+    description: product.description,
+    price: product.price,
+  });
+
+  newProduct
+    .save()
+    .then((savedProduct) => {
+      res.json(savedProduct);
+    })
+    .catch((err) => {
+      console.log("There was an error: " + err);
+    });
+});
+
+app.put("/api/products/:id", (req, res, next) => {
+  const { id } = req.params;
+  const product = req.body;
+
+  Product.findByIdAndUpdate(id, product, { new: true })
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+app.delete("/api/products/:id", (req, res, next) => {
+  const { id } = req.params;
+
+  Product.findByIdAndRemove(id)
+    .then((result) => {
+      res.status(204).end();
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+app.use(notFound);
+
+app.use(handleErrors);
 
 app.listen(PORT, () => {
   console.log("App listening on port: " + PORT);

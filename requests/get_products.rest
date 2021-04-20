@@ -1,0 +1,4 @@
+GET http://localhost:3001/api/products
+
+### Get one product
+GET http://localhost:3001/api/products/607e1f1c6dd1d83dd0fb063

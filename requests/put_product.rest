@@ -1,0 +1,10 @@
+PUT http://localhost:3001/api/products/607e2beeb8c44c5714bd1720
+Content-Type: application/json
+
+{
+  "barsCode": 2410210421,
+  "name": "Product 4",
+  "creationDate": "Mon Apr 19 2021 19:24:35 GMT-0500 (Colombia Standard Time)",
+  "description": "Product 3 is now 4",
+  "price": 34
+}

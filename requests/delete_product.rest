@@ -1,0 +1,1 @@
+DELETE http://localhost:3001/api/products/607e2beeb8c44c5714bd1720
