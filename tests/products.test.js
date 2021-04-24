@@ -4,6 +4,7 @@ const {
   api,
   initialProducts,
   getAllDescriptionsFromProducts,
+  getAllProducts,
 } = require("./helpers");
 const Product = require("../models/Product");
 
@@ -32,6 +33,30 @@ test("One of the descriptions is: Desc 1", async () => {
   const { descriptions } = await getAllDescriptionsFromProducts();
 
   expect(descriptions).toContain("Desc 1");
+});
+
+test("Individual products can be retrieved", async () => {
+  const products = await getAllProducts();
+
+  const product1 = await api
+    .get(`/api/products/${products[0].id}`)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  expect(product1.body).toEqual(products[0]);
+});
+
+describe("Looking for an individual product with", () => {
+  test("bad formated ID hash returns error 400", async () => {
+    await api
+      .get("/api/products/607f2b22e1d3702bd0")
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("non-existent ID returns error 404", async () => {
+    await api.get("/api/products/607f2b22e1d3702bd0238220").expect(404);
+  });
 });
 
 test("A valid product can be added", async () => {

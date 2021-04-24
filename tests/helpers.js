@@ -27,4 +27,14 @@ const getAllDescriptionsFromProducts = async () => {
   };
 };
 
-module.exports = { api, initialProducts, getAllDescriptionsFromProducts };
+const getAllProducts = async () => {
+  const response = await api.get("/api/products");
+  return response.body;
+};
+
+module.exports = {
+  api,
+  initialProducts,
+  getAllDescriptionsFromProducts,
+  getAllProducts,
+};

@@ -13,7 +13,7 @@ const handleErrors = require("./middlewares/handleErrors");
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/products", (req, res, next) => {
+app.get("/api/products", ({}, res, next) => {
   Product.find({})
     .then((products) => {
       res.json(products);
@@ -81,7 +81,7 @@ app.delete("/api/products/:id", (req, res, next) => {
   const { id } = req.params;
 
   Product.findByIdAndRemove(id)
-    .then((result) => {
+    .then(() => {
       res.status(204).end();
     })
     .catch((err) => {
