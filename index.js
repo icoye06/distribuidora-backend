@@ -49,7 +49,7 @@ app.post("/api/products", (req, res) => {
   const newProduct = new Product({
     barsCode: product.barsCode,
     name: product.name,
-    creationDate: product.creationDate,
+    creationDate: new Date(),
     description: product.description,
     price: product.price,
   });
@@ -57,7 +57,7 @@ app.post("/api/products", (req, res) => {
   newProduct
     .save()
     .then((savedProduct) => {
-      res.json(savedProduct);
+      res.status(200).json(savedProduct);
     })
     .catch((err) => {
       console.log("There was an error: " + err);
