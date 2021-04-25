@@ -32,9 +32,15 @@ const getAllProducts = async () => {
   return response.body;
 };
 
+const getOneProduct = async () => {
+  const response = await api.get("/api/products");
+  return response.body[0];
+};
+
 module.exports = {
   api,
   initialProducts,
   getAllDescriptionsFromProducts,
   getAllProducts,
+  getOneProduct,
 };

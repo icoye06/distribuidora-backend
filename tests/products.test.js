@@ -5,8 +5,10 @@ const {
   initialProducts,
   getAllDescriptionsFromProducts,
   getAllProducts,
+  getOneProduct,
 } = require("./helpers");
 const Product = require("../models/Product");
+const { response } = require("express");
 
 beforeEach(async () => {
   await Product.deleteMany({});
@@ -97,7 +99,46 @@ test("A product without name can't be added", async () => {
   expect(response.body).toHaveLength(initialProducts.length);
 });
 
-afterAll(() => {
+test("A product can be edited", async () => {
+  const product = await getOneProduct();
+
+  const updateProduct = {
+    name: "Product updated",
+  };
+
+  await api
+    .put(`/api/products/${product.id}`)
+    .send(updateProduct)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  const newProduct = await getOneProduct();
+
+  expect(newProduct.name).toEqual(updateProduct.name);
+});
+
+test("Editing a product with a malformed ID returns error 400", async () => {
+  await api
+    .put(`/api/products/12424152h`)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+});
+
+describe("Deleten a product", () => {
+  test("with correct ID returns 204", async () => {
+    const product1 = await getOneProduct();
+
+    await api.delete(`/api/products/${product1.id}`).expect(204);
+  });
+
+  test("with malformed ID returns 400", async () => {
+    await api.delete(`/api/products/412121512`).expect(400);
+  });
+});
+
+afterAll(async () => {
+  await Product.deleteMany({});
+
   mongoose.connection.close();
   server.close();
 });
